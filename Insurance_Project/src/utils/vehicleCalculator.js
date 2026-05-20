@@ -31,54 +31,54 @@ export const vehiclePremium = (
     basePrice = 10000
 ) =>{
      // Base Price
-  let price = basePrice;
+  let total = basePrice;
 
   const breakdown =[];
 
   breakdown.push({
     label:"Base Price",
     rate: 1,
-    amount: price,
+    amount: total,
 });
 
   // Vehicle Type
   car.type.forEach((type) => {
     const rate = autoRates[type] || 1;
-    price *= rate;
+    total *= rate;
 
     breakdown.push({
         label: `Type (${type})`,
         rate,
-        amount: price,
+        amount: total,
     });
   });
 
   // Engine
   car.engine.forEach((engine) => {
     const rate = engineRates[engine] || 1;
-    price *= rate;
+    total *= rate;
 
     breakdown.push({
         label:`Engine (${engine})`,
         rate,
-        amount: price,
+        amount: total,
     });
 });
 
   // Year
   const vehicleYearRate = (car.year);
 
-  price *= vehicleYearRate;
+  total *= vehicleYearRate;
 
   breakdown.push({
     label:`year (${car.year})`,
     rate: vehicleYearRate,
-    amount: price,
+    amount: total,
 
   });
 
   return {
-    price,
+    total,
     breakdown,
   }
 }

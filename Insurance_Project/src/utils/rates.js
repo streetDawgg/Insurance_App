@@ -16,13 +16,13 @@ export const engineRates = {
 
 export const clientRates = {
   Student: 0.45,
-  Businessman: 1.2,
+  Businessman: 1.1,
   Worker: 0.9,
 };
 
 export const genderRates = {
-  Male: 1.2,
-  Female: 1.3,
+  Male: 0.7,
+  Female: 0.9,
 };
 
 export const driverPolicyRate = (

@@ -16,14 +16,79 @@ export const calculateInsurance = ({
 
   //Family cal
 const isFamily = familyDrivers.length > 0;
+if(isFamily){
 
+let total = 0; 
+
+const breakdown = [];
+
+familyDrivers.forEach(driver => {
+  const makeData = autoDB.find(c => c.make === driver.make);
+  const vehicle = makeData?.models.find(model => model.model === driver.model);
+
+if(!vehicle) return;
+
+// vehicle
+const vehicleData = vehiclePremium(
+  vehicle, 
+  basePrice);
+
+const driverData = driverPremium({
+    gender:driver.gender,
+    age: Number(driver.age),
+    occupation: driver.occupation,
+    grade: Number(driver.grade),
+});
+
+const memberPrice = vehicleData.total * driverData.multiplier 
+
+total += memberPrice;
+
+breakdown.push({
+  driver:driver.name,
+
+  vehicle: 
+  `${driver.make} ${driver.model}`,
+
+  vehicleBreakdown:
+  vehicleData.breakdown,
+
+  driverBreakdown: 
+  driverData.breakdown,
+
+  subtotal: 
+  memberPrice,
+});
+});
+
+const policyRate = driverPolicyRate(familyDrivers.length || 1);
+
+total *= policyRate
+
+//final breakdown
+breakdown.push( {
+  label:
+  `Policy (${familyDrivers.length || 1} drivers)`,
+  
+  rate: 
+  policyRate,
+  
+  amount: 
+  total,
+});
+return{
+  total:
+  Number(total.toFixed(2)),
+
+  breakdown,
+}
+}
+
+/////////////////////////SINGLE POLICY/////////////////////////////////
 if (!isFamily){
   // vehicle premium
     const vehicleData = 
-      vehiclePremium(
-        car, 
-        basePrice);
-let price = vehicleData.price;
+      vehiclePremium(car, basePrice);
 
 // driver
   const driverData = 
@@ -33,7 +98,7 @@ let price = vehicleData.price;
     occupation,
     grade,
 });
-price *= driverData.multiplier || 1 ;
+let price = vehicleData.total * driverData.multiplier || 1 ;
 
   // Total Drivers
   const totalDrivers = (familyDrivers?.length || 0) +1;
@@ -47,11 +112,6 @@ price *= driverData.multiplier || 1 ;
     breakdown:[
       ...vehicleData.breakdown,
       ...driverData.breakdown,
-    {
-      label: `Policy (${totalDrivers} drivers)`,
-      rate: policyRate,
-      amount: price,
-  },
 ],  
   }
 };

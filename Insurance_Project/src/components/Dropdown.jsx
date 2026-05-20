@@ -20,6 +20,7 @@ export default function Dropdown(){
     const [familyDrivers, setFamilyDrivers] = useState([]);
 
     const [premium, setPremium] = useState(null);
+    const [familyPremium, setFamilyPremium] = useState(null);
 
     // Find Make
     const currentMake = autoDB.find(
@@ -32,22 +33,42 @@ export default function Dropdown(){
     );
 
     const handleCalculate = () =>{
-        if (!currentModel){
+        if (policyType === `Single`){   
+          if (!currentModel){
             alert("Select a vehicle");
             return;
-        }
-    
-   const result = calculateInsurance({
+          } 
+
+    const result = calculateInsurance({
     car: currentModel,
     gender,
     age: Number(age),
     occupation,
     grade: Number(grade),
+    familyDrivers: [],
     basePrice: 10000,
-});
+        });
 
-    setPremium(result)
-    };
+    setPremium(result);
+    setFamilyPremium(null);
+    }
+
+    else{ 
+      if (familyDrivers.length === 0){
+        alert("Please add family drivers")
+        return;
+      }
+      const result = calculateInsurance({
+        familyDrivers,
+        basePrice: 9000,
+      });
+    setPremium(null);
+    setFamilyPremium(result);
+    }
+        }
+
+
+ 
 
  return (
   
@@ -237,28 +258,24 @@ export default function Dropdown(){
         )}
       </>)}
 
-      {policyType === "Family" && (
 
+      {policyType === "Family" && (
 // FAMILY SELECTION
   <div className="family-section">
-    
-
     <h2>Family Drivers</h2>
 
     {familyDrivers.map((driver, index) => {
+      
       const driverMakeData = autoDB.find(car => car.make === driver.make);
+      
       return(
-      <div
-        key={index}
-        className="family-card"
-      >
+      <div key={index} className="family-card">
 
         <input
           type="text"
           placeholder="Driver Name"
           value={driver.name}
           onChange={(e) => {
-            
             const updated =
               [...familyDrivers];
 
@@ -345,6 +362,7 @@ export default function Dropdown(){
           setFamilyDrivers(updated)
           }}    
           className = "input">
+            
         <option value ="">Select Make</option>
 
         {autoDB.map(car =>(
@@ -354,8 +372,7 @@ export default function Dropdown(){
           >
             {car.make}
           </option>
-        )
-      )};
+        ))}
           </select>
           
   <select
@@ -371,8 +388,7 @@ className = "input">
 
 <option value = ""> Select Model </option>
 
-{autoDB.find(car => car.make === driver.make)
-?.models.map(model => (
+{driverMakeData?.models.map(model => (
   <option key={model.model} value={model.model}>
     {model.model}
   </option>
@@ -405,12 +421,63 @@ className = "input">
     >
       Add Family Driver
     </button>
+  {/* Calculate Button */}
+        <button onClick={handleCalculate} className="button">
+          Calculate Premium
+        </button>
 
-  </div>
-)}
+               {/* Result */}
+        {familyPremium && (
+          <div className="result">
+            <h2>Estimated Premium</h2>
 
+          {familyPremium.breakdown.map((driver, index)=>(
+            <div key={index} calassName="breakdown-item">
 
+             <h3>{driver.driver}</h3> 
+
+             <p>
+              Vehicle:
+              <strong>
+                {""}
+                {driver.vehicle}
+              </strong>
+             </p>
+
+              <p>
+                Total:
+                <strong>
+                  {" "}
+                   ₱
+                   {driver.subtotal?.toLocaleString(
+                    undefined,
+                    {
+                      maximumFractionDigits: 2,
+                    }
+                   )}
+                </strong>
+              </p>
+                         </div>
+          ))}
+                  <h1>
+                    ₱
+                    {familyPremium.total.toLocaleString(
+                      undefined,
+                      {
+                        maximumFractionDigits: 2,
+                      }
+                    )} 
+                  </h1>
+</div>
+        )}
       </div>
-    </div>
+
+
+
+
+)}
+</div>
+  </div>
   );
 }
+

@@ -1,3 +1,109 @@
+        {/* Client Name */}
+        {policyType === "Single" && (
+  <>
+        <div className="group">
+          <label>Client Name</label>
+          <input
+            type="text"
+            placeholder="Enter full name"
+            value={clientName}
+            onChange={(e) => setClientName(e.target.value)}
+            className="input"
+          />
+        </div>
+
+        {/* Gender */}
+        <div className="group">
+          <label>Gender</label>
+          <select
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            className="input"
+          >
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+
+        {/* Age */}
+        <div className="group">
+          <label>Driver Age</label>
+          <input
+            type="number"
+            placeholder="Enter age"
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+            className="input"
+          />
+        </div>
+
+        {/* Occupation */}
+        <div className="group">
+          <label>Occupation</label>
+          <select
+            value={occupation}
+            onChange={(e) => setOccupation(e.target.value)}
+            className="input"
+          >
+            <option value="Student">Student</option>
+            <option value="Worker">Worker</option>
+            <option value="Businessman">Businessman</option>
+          </select>
+        </div>
+
+        {/* Student Grade */}
+        {occupation === "Student" && (
+          <div className="group">
+            <label>Student Grade</label>
+            <input
+              type="number"
+              placeholder="Enter grade"
+              value={grade}
+              onChange={(e) => setGrade(e.target.value)}
+              className="input"
+            />
+          </div>
+        )}
+                {/* Make Dropdown */}
+        <div className="group">
+          <label>Vehicle Make</label>
+          <select
+            value={selectedMake}
+            onChange={(e) => {
+              setSelectedMake(e.target.value);
+              setSelectedModel("");
+            }}
+            className="input"
+          >
+            <option value="">Select Make</option>
+
+            {autoDB.map(car => (
+              <option key={car.make} value={car.make}>
+                {car.make}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Model Dropdown */}
+        <div className="group">
+          <label>Vehicle Model</label>
+          <select
+            value={selectedModel}
+            onChange={(e) => setSelectedModel(e.target.value)}
+            className="input"
+            disabled={!selectedMake}
+          >
+            <option value="">Select Model</option>
+
+            {currentMake?.models.map(model => (
+              <option key={model.model} value={model.model}>
+                {model.model}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Calculate Button */}
         <button onClick={handleCalculate} className="button">
           Calculate Premium
@@ -52,3 +158,4 @@
             </h1>
           </div>
         )}
+      </>)}

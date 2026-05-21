@@ -12,6 +12,7 @@ export const engineRates = {
   Inline: 1.2,
   Hybrid: 1.25,
   Electric: 1.15,
+  Flat: 1.3,
 };
 
 export const clientRates = {

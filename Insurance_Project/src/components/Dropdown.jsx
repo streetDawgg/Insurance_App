@@ -1,8 +1,10 @@
 import {useState} from "react";
 import autoDB from "../data/AutoDb";
-import {calculateInsurance} from "../utils/insuranceCalculator";
+import {calculateFamilyInsurance } from "../utils/familyInsuranceCalculator";
+import { calculateSingleInsurance } from "../utils/singleInsuranceCalculator";
 
 import "../styles/Dropdown.css"
+import { vehiclePremium } from "../utils/vehicleCalculator";
 
 export default function Dropdown(){
 
@@ -32,44 +34,28 @@ export default function Dropdown(){
         model => model.model === selectedModel
     );
 
+    ////////CALCULATION HANDLER///////////
     const handleCalculate = () =>{
-        if (policyType === `Single`){   
-          if (!currentModel){
-            alert("Select a vehicle");
-            return;
+
+        if (policyType === `Single`){ 
+          const result = calculateSingleInsurance ({
+              car: currentModel,
+              gender,
+              age: Number(age),
+              occupation,
+              grade: Number(grade),
+              basePrice: 10000
+          });  
+            setPremium(result)
+          } else {
+            const result = calculateFamilyInsurance({ 
+            familyDrivers,
+            basePrice: 9000
+            });
+            setFamilyPremium(result);
           } 
-
-    const result = calculateInsurance({
-    car: currentModel,
-    gender,
-    age: Number(age),
-    occupation,
-    grade: Number(grade),
-    familyDrivers: [],
-    basePrice: 10000,
-        });
-
-    setPremium(result);
-    setFamilyPremium(null);
-    }
-
-    else{ 
-      if (familyDrivers.length === 0){
-        alert("Please add family drivers")
-        return;
-      }
-      const result = calculateInsurance({
-        familyDrivers,
-        basePrice: 9000,
-      });
-    setPremium(null);
-    setFamilyPremium(result);
-    }
         }
-
-
- 
-
+        
  return (
   
     <div className="page">
@@ -223,6 +209,7 @@ export default function Dropdown(){
                 {selectedMake} {selectedModel}
               </strong>
             </p>
+
             <div className="breakdown">
   <h3>Premium Breakdown</h3>
 
@@ -381,14 +368,13 @@ export default function Dropdown(){
     const updated = [...familyDrivers];
     updated[index].model = 
     e.target.value;
-    
     setFamilyDrivers(updated);
 }}  
 className = "input">
 
 <option value = ""> Select Model </option>
 
-{driverMakeData?.models.map(model => (
+{driverMakeData?.models?.map(model => (
   <option key={model.model} value={model.model}>
     {model.model}
   </option>
@@ -426,30 +412,34 @@ className = "input">
           Calculate Premium
         </button>
 
+
                {/* Result */}
         {familyPremium && (
           <div className="result">
-            <h2>Estimated Premium</h2>
+            <h2>Family Premium</h2>
+          
+{/*<pre style={{textAlign: "left"}}>
+  {JSON.stringify(familyPremium, null, 2)}
+</pre>*/}
 
-          {familyPremium.breakdown.map((driver, index)=>(
-            <div key={index} calassName="breakdown-item">
+          {familyPremium?.breakdown?.map((item, index)=>(
 
-             <h3>{driver.driver}</h3> 
+            <div key={index} className="breakdown-item">
+                
+             <h3>{item.name}</h3> 
 
              <p>
               Vehicle:
               <strong>
-                {""}
-                {driver.vehicle}
+                {item.vehicle}
               </strong>
              </p>
 
               <p>
                 Total:
                 <strong>
-                  {" "}
                    ₱
-                   {driver.subtotal?.toLocaleString(
+                   {item.subtotal?.toLocaleString(
                     undefined,
                     {
                       maximumFractionDigits: 2,
@@ -457,18 +447,40 @@ className = "input">
                    )}
                 </strong>
               </p>
+                  <div>
+                    <h4>Vehicle Breakdown</h4>
+                   {item.vehicleBreakdown?.map(
+                    (v,i) =>(
+                      <div key={i}>
+                          {v.label} - x{v.rate}
+                      </div>
+                    )
+                   )}
+                  </div>
+                                    <div>
+                    <h4>Driver Breakdown</h4>
+                   {item.driverBreakdown?.map(
+                    (d,i) =>(
+                      <div key={i}>
+                          {d.label} - x{d.rate}
+                      </div>
+                    )
+                   )}
+                  </div>
                          </div>
-          ))}
+            
+))}
                   <h1>
                     ₱
-                    {familyPremium.total.toLocaleString(
-                      undefined,
+                    {Number(familyPremium.total || 0)
+                    .toLocaleString( undefined,
                       {
                         maximumFractionDigits: 2,
                       }
                     )} 
                   </h1>
 </div>
+
         )}
       </div>
 

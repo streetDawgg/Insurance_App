@@ -7,23 +7,18 @@ import {
 export const yearRate = (year) => {
   if (!year) return 1;
 
-  const minRate = 1.0;
-  const maxRate = 1.6;
+  const currentYear = 2026;
+  const carAge = currentYear - year
+  
+  if(carAge <=2) return 1.20;
 
-  const baseYear = 1980;
-  const latestYear = 2026;
+  if (carAge <= 5) return 1.12;
 
-  let progress =
-    (year - baseYear) /
-    (latestYear - baseYear);
+  if (carAge <= 10) return 1.05;
 
-  progress = Math.max(0, Math.min(progress, 1));
+  if (carAge <= 20) return 0.95;
 
-  return (
-    minRate +
-    (maxRate - minRate) *
-      Math.pow(progress, 1.5)
-  );
+  return 0.85;
 };
 
 export const vehiclePremium = (
@@ -66,7 +61,7 @@ export const vehiclePremium = (
 });
 
   // Year
-  const vehicleYearRate = (car.year);
+  const vehicleYearRate = yearRate(car.year);
 
   total *= vehicleYearRate;
 

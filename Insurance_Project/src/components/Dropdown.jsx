@@ -24,6 +24,8 @@ export default function Dropdown(){
     const [premium, setPremium] = useState(null);
     const [familyPremium, setFamilyPremium] = useState(null);
 
+    const [selectedBreakdown,setSelectedBreakdown] = useState(null)
+
     // Find Make
     const currentMake = autoDB.find(
         car => car.make === selectedMake
@@ -48,12 +50,14 @@ export default function Dropdown(){
           });  
             setPremium(result)
           } else {
+            if (!familyDrivers.length) return;
+
             const result = calculateFamilyInsurance({ 
             familyDrivers,
             basePrice: 9000
             });
             setFamilyPremium(result);
-          } 
+          }
         }
         
  return (
@@ -197,7 +201,12 @@ export default function Dropdown(){
         {premium && (
           <div className="result">
             <h2>Estimated Premium</h2>
-
+            <h1>
+              ₱
+              {premium.total.toLocaleString(undefined, {
+                maximumFractionDigits: 2,
+              })}
+            </h1>
             <p>
               Client: <strong>{clientName}</strong>
             </p>
@@ -234,7 +243,7 @@ export default function Dropdown(){
     </div>
   ))}
 </div>
-
+            <h2>Breakdown:</h2>
             <h1>
               ₱
               {premium.total.toLocaleString(undefined, {
@@ -245,251 +254,273 @@ export default function Dropdown(){
         )}
       </>)}
 
+{/*- ----------------------------------------------------------------------------------------------------------------------------------- */}
+{/* FAMILY SECTION */}
+{policyType === `Family` && (
+<div className="family-section">
 
-      {policyType === "Family" && (
-// FAMILY SELECTION
-  <div className="family-section">
-    <h2>Family Drivers</h2>
+  {/* TOP ROW */}
+  <div className="family-row">
 
     {familyDrivers.map((driver, index) => {
-      
-      const driverMakeData = autoDB.find(car => car.make === driver.make);
-      
-      return(
-      <div key={index} className="family-card">
 
-        <input
-          type="text"
-          placeholder="Driver Name"
-          value={driver.name}
-          onChange={(e) => {
-            const updated =
-              [...familyDrivers];
+      const driverMakeData =
+        autoDB.find(
+          car => car.make === driver.make
+        );
 
-            updated[index].name =
-              e.target.value;
+        const calculated = familyPremium?.breakdown?.find(
+          b => b.name === driver.name
+        );
 
-            setFamilyDrivers(updated);
-          }}
-          className="input"
-        />
-        <select
-          value={driver.gender}
-          onChange={(e) => {
-            const updated = [...familyDrivers];
+      return (
 
-            updated[index].gender =
-              e.target.value;
+        <div key={index} className="driver-card">
 
-            setFamilyDrivers(updated);
-          }}
-          className="input"
-        >
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-        </select>
+ <input
+    type="text"
+    placeholder="Driver Name"
+    value={driver.name}
+    onChange={(e) => {
+      const updated = [...familyDrivers];
+      updated[index].name = e.target.value;
+      setFamilyDrivers(updated);
+    }}
+    className="input"
+  />
 
-        <input
-          type="number"
-          placeholder="Age"
-          value={driver.age}
-          onChange={(e) => {
+  <input
+    type="number"
+    placeholder="Age"
+    value={driver.age}
+    onChange={(e) => {
+      const updated = [...familyDrivers];
+      updated[index].age = e.target.value;
+      setFamilyDrivers(updated);
+    }}
+    className="input"
+  />
 
-            const updated =
-              [...familyDrivers];
+  <select
+    value={driver.gender}
+    onChange={(e) => {
+      const updated = [...familyDrivers];
+      updated[index].gender = e.target.value;
+      setFamilyDrivers(updated);
+    }}
+    className="input"
+  >
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+  </select>
 
-            updated[index].age =
-              e.target.value;
+<select
+value ={driver.occupation}
+onChange={(e) => {
+   const updated = [...familyDrivers];
+   updated[index].occupation = e.target.value;
+   setFamilyDrivers(updated);
+}}
+className = "input"
+>
+  <option value="Worker"
+  >Worker
+  </option>
 
-            setFamilyDrivers(updated);
-          }}
-          className="input"
-        />
+  <option value="Businessman"
+  >Businessman
+  </option>
 
-        <select
-  value={driver.occupation}
-  onChange={(e) => {
-    const updated = [...familyDrivers];
+  <option value="Student"
+  >Student
+  </option>
+</select>
+{driver.occupation === "Student" && (
+  <input
+    type = "number"
+    placeholder="Student Grade"
+    value={driver.grade}
+    onChange={(e)=> {
+      const updated = [...familyDrivers];
 
-    updated[index].occupation =
+      updated[index].grade = 
       e.target.value;
 
-    setFamilyDrivers(updated);
-  }}
-  className="input">
-  <option value="Businessman">Businessman</option>
-  <option value="Worker">Worker</option>
-  <option value="Student">Student</option>
-</select>
-
-      {driver.occupation === "Student" && (
-                <div className="group">
-                  <label>Student Grade</label>
-                  <input
-                    type="number"
-                    placeholder="Enter grade"
-                    value={driver.grade || ""}
-                    onChange={(e) => { 
-                    const updated = [...familyDrivers];
-                    updated[index].grade = e.target.value;
-                    setFamilyDrivers(updated)
-                    }}
-
-                    className="input"/>
-                </div>
-              )}
-
-          <select
-          value={driver.make}
-          onChange={(e) =>{
-
-            const updated = [...familyDrivers];
-          updated[index].make = 
-          e.target.value;
-          setFamilyDrivers(updated)
-          }}    
-          className = "input">
-            
-        <option value ="">Select Make</option>
-
-        {autoDB.map(car =>(
-          <option
-          key={car.make}
-          value={car.make}
-          >
-            {car.make}
-          </option>
-        ))}
-          </select>
-          
+      setFamilyDrivers(updated);
+    }}
+    className="input"
+    ></input>
+)}
   <select
-  value={driver.model}
-  onChange={(e) =>{
-    const updated = [...familyDrivers];
-    updated[index].model = 
-    e.target.value;
-    setFamilyDrivers(updated);
-}}  
-className = "input">
+    value={driver.make}
+    onChange={(e) => {
+      const updated = [...familyDrivers];
+      updated[index].make = e.target.value;
+      updated[index].model = "";
+      setFamilyDrivers(updated);
+    }}
+    className="input"
+  >
+    <option value="">Select Make</option>
 
-<option value = ""> Select Model </option>
+    {autoDB.map(car => (
+      <option key={car.make} value={car.make}>
+        {car.make}
+      </option>
+    ))}
+  </select>
 
-{driverMakeData?.models?.map(model => (
-  <option key={model.model} value={model.model}>
-    {model.model}
-  </option>
-))}
+  <select
+    value={driver.model}
+    onChange={(e) => {
+      const updated = [...familyDrivers];
+      updated[index].model = e.target.value;
+      setFamilyDrivers(updated);
+    }}
+    className="input"
+  >
+    <option value="">Select Model</option>
 
-</select>
+    {driverMakeData?.models?.map(model => (
+      <option
+        key={model.model}
+        value={model.model}
+      >
+        {model.model}
+      </option>
+    ))}
+  </select>
 
-      </div>
+  {/* PREMIUM INFO */}
+  {calculated && (
+    <>
+      <h2 className="price">
+        ₱
+        {calculated
+          .subtotal
+          ?.toLocaleString()}
+      </h2>
+
+      <button
+        className="breakdown-btn"
+        onClick={() =>
+          setSelectedBreakdown(
+            familyPremium.breakdown[index]
+          )
+        }
+      >
+        View Breakdown
+      </button>
+    </>
+  )}
+
+        </div>
+
       );
-})}
 
-    <button
-      className="button"
-      onClick={() => {
+    })}
 
-        setFamilyDrivers([
-          ...familyDrivers,
+    {/* ADD CARD */}
+    <div className="add-card">
+    
+      <button
+        className="add-btn"
+        onClick={() => {
+          setFamilyDrivers([
+            ...familyDrivers,
+            {
+              name: "",
+              age: "",
+              gender: "Male",
+              occupation: "Worker",
+              grade: "",
+              make: "",
+              model: ""
+            }
+          ]);
+        }}
+      >
+        + Add Card
+      </button>
 
-          {
-          name: "",
-          age: "",
-          gender: "Male",
-          occupation: "Worker",
-          grade: "",
-          make: "",
-          model: ""
-          },
-        ]);
-      }}
+    </div>
+
+  </div>
+{selectedBreakdown && (
+  <div
+    className="modal-overlay"
+    onClick={() => setSelectedBreakdown(null)}
+  >
+    <div
+      className="modal-content"
+      onClick={(e) => e.stopPropagation()}
     >
-      Add Family Driver
-    </button>
+      <h2>{selectedBreakdown.name}</h2>
+
+      <p>
+        Vehicle:
+        <strong>
+          {" "}
+          {selectedBreakdown.vehicle}
+        </strong>
+      </p>
+
+      <h3>Vehicle Breakdown</h3>
+
+      {selectedBreakdown.vehicleBreakdown?.map((v, i) => (
+        <div key={i} className="modal-row">
+          <span>{v.label}</span>
+          <span>x{v.rate}</span>
+        </div>
+      ))}
+
+      <h3>Driver Breakdown</h3>
+
+      {selectedBreakdown.driverBreakdown?.map((d, i) => (
+        <div key={i} className="modal-row">
+          <span>{d.label}</span>
+          <span>x{d.rate}</span>
+        </div>
+      ))}
+
+      <h2>
+        ₱
+        {selectedBreakdown.subtotal?.toLocaleString()}
+      </h2>
+
+      <button
+        className="close-btn"
+        onClick={() => setSelectedBreakdown(null)}
+      >
+        Close
+      </button>
+    </div>
+    
+  </div>
+  
+)}
   {/* Calculate Button */}
         <button onClick={handleCalculate} className="button">
           Calculate Premium
         </button>
+  {/* TOTAL */}
+  <div className="family-total-box">
 
+    <h2> TOTAL FAMILY PREMIUM </h2>
 
-               {/* Result */}
-        {familyPremium && (
-          <div className="result">
-            <h2>Family Premium</h2>
-          
-{/*<pre style={{textAlign: "left"}}>
-  {JSON.stringify(familyPremium, null, 2)}
-</pre>*/}
+    <h1>
+      ₱{Number(familyPremium?.total || 0).toLocaleString()}
+    </h1>
 
-          {familyPremium?.breakdown?.map((item, index)=>(
-
-            <div key={index} className="breakdown-item">
-                
-             <h3>{item.name}</h3> 
-
-             <p>
-              Vehicle:
-              <strong>
-                {item.vehicle}
-              </strong>
-             </p>
-
-              <p>
-                Total:
-                <strong>
-                   ₱
-                   {item.subtotal?.toLocaleString(
-                    undefined,
-                    {
-                      maximumFractionDigits: 2,
-                    }
-                   )}
-                </strong>
-              </p>
-                  <div>
-                    <h4>Vehicle Breakdown</h4>
-                   {item.vehicleBreakdown?.map(
-                    (v,i) =>(
-                      <div key={i}>
-                          {v.label} - x{v.rate}
-                      </div>
-                    )
-                   )}
-                  </div>
-                                    <div>
-                    <h4>Driver Breakdown</h4>
-                   {item.driverBreakdown?.map(
-                    (d,i) =>(
-                      <div key={i}>
-                          {d.label} - x{d.rate}
-                      </div>
-                    )
-                   )}
-                  </div>
-                         </div>
-            
-))}
-                  <h1>
-                    ₱
-                    {Number(familyPremium.total || 0)
-                    .toLocaleString( undefined,
-                      {
-                        maximumFractionDigits: 2,
-                      }
-                    )} 
-                  </h1>
+  </div>
+  
 </div>
-
-        )}
-      </div>
-
-
-
-
 )}
+
+{/* -------------------------------------------------------------------------*/}
 </div>
   </div>
+  
   );
 }
 

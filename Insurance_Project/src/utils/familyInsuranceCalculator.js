@@ -13,10 +13,13 @@ export const calculateFamilyInsurance = ({
     const breakdown = []
 
     familyDrivers.forEach(driver =>{
+        console.log("Driver input:", driver);
         const makeData = autoDB.find(car => car.make === driver.make);
+
+        console.log("Make Data:", makeData)
         const vehicle = makeData?.models.find(model => model.model === driver.model);
     
-    
+        console.log("Vehicle:", vehicle)
     
     const vehicleData = vehiclePremium(vehicle, basePrice);
     if (!vehicleData?.total || isNaN(vehicleData.total)){

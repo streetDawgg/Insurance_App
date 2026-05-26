@@ -105,11 +105,34 @@
 }
 
 .breakdown-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #dbeafe;
+  background: white;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+
+  padding: 16px;
+  margin-bottom: 16px;
+
+  text-align: left;
+}
+
+.breakdown-item h3 {
+  color: #1e3a8a;
+  margin-bottom: 10px;
+}
+
+.breakdown-item p {
+  margin-bottom: 8px;
+}
+
+.breakdown-item h4 {
+  margin-top: 12px;
+  margin-bottom: 6px;
+  color: #334155;
+}
+
+.breakdown-item div {
   font-size: 14px;
+  line-height: 1.5;
 }
 
 .family-section {
@@ -118,6 +141,7 @@
 
 .family-card {
   background: #f8fafc;
+    border: 1px solid #e2e8f0;
   padding: 15px;
   border-radius: 12px;
   margin-bottom: 15px;
@@ -125,4 +149,19 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+pre {
+  background: #0f172a;
+  color: #e2e8f0;
+
+  padding: 12px;
+  border-radius: 10px;
+
+  overflow-x: auto;
+
+  font-size: 12px;
+  margin-top: 15px;
+
+  text-align: left;
 }

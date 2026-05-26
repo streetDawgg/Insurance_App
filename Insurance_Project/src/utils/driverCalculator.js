@@ -5,11 +5,11 @@ import {
 } from "../utils/rates";
 
 export const ageRate = (age) => {
-  if (age <= 19) return 1.5;
+  if (age <= 19) return 1.45;
 
   if (age < 25) return 1.2;
 
-  if (age >= 60) return 1.5;
+  if (age >= 60) return 1.25;
 
   return 1;
 };
@@ -32,7 +32,7 @@ let multiplier = 1;
 const breakdown = [];
 
   // Occupation
-  const occupationRate = clientRates[occupation] || 1;
+  const occupationRate = Number(clientRates[occupation]) || 1;
 
   multiplier *= occupationRate;
 
@@ -44,7 +44,8 @@ const breakdown = [];
 
   // Student Discount
   if (occupation === "Student") {
-    const goodStudent = studentDiscount(grade);
+    const safeGrade = Number(grade) || 0;
+    const goodStudent = studentDiscount(safeGrade);
 
     multiplier *= goodStudent;
 
@@ -56,7 +57,7 @@ const breakdown = [];
   }
 
   // Gender
-  const genderRateValue = genderRates[gender] || 1;
+  const genderRateValue = Number(genderRates[gender]) || 1;
   multiplier *= genderRateValue;
 
   breakdown.push({
@@ -66,7 +67,7 @@ const breakdown = [];
   })
 
   // Age
- const driverAgeRate = ageRate(age);
+ const driverAgeRate = Number(ageRate(age)) || 1;
  multiplier *= driverAgeRate;
 
   breakdown.push({
@@ -77,7 +78,7 @@ const breakdown = [];
   });
 
   return {
-    multiplier,
+    multiplier: Number(multiplier.toFixed(4)),
     breakdown,
   }
 }

@@ -5,7 +5,7 @@ import { driverPolicyRate } from "./rates";
 
 export const calculateFamilyInsurance = ({
   familyDrivers = [],
-  basePrice = 1000,
+  basePrice = 10000,
 }) => {
 
     let total = 0; 

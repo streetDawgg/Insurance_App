@@ -1,0 +1,44 @@
+[
+  {
+    "make": "BMW",
+    "models": [
+      {
+        "model": "E46",
+        "type": "Coupe",
+        "engine": "Inline",
+        "year": 1997
+      },
+      
+      {
+        "model": "E90",
+        "type": "Sedan",
+        "engine": "V",
+        "year": 2004
+      }
+    ]
+  },
+  {
+    "make": "Toyota",
+    "models": [
+      {
+        "model": "Camry",
+        "type": "Luxury",
+        "engine": "Inline",
+        "year": 2000
+      },
+
+      {
+         "model": "Fortuner",
+       "type": "SUV",
+        "engine": "Inline",
+         "year": 2018
+         },
+
+      {
+         "model": "Supra MK5",
+       "type": "Sports",
+        "engine": "Inline",
+         "year": 2021 }
+    ]
+  }
+]

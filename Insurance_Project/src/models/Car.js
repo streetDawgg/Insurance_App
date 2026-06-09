@@ -6,7 +6,18 @@ const modelSchema =  new mongoose.Schema({
     model: String,
     type: String,
     engine: String,
+    //cylinder:Number,
     year: Number,
+
+    deleted: {
+        type: Boolean,
+        default: false,
+    },
+
+    deletedAt: {
+        type: Date,
+        default: null,
+    }
 });
 
 

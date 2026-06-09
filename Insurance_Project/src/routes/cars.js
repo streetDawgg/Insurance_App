@@ -13,7 +13,9 @@ router.get("/", async (req, res) =>{
 
         const skip = (page -1) * limit;
 
-        const cars = await Car.find()
+        const cars = await Car.find({
+            delted:false
+        })
         .skip(skip)
         .limit(limit);
 
@@ -51,6 +53,7 @@ router.patch("/custom/year/:make/:model", async (req, res) => {
         const vehicle = await Car.findOneAndUpdate({
             make:new RegExp(`^${make}$`, "i"),
             model:new RegExp(`^${model}$`, "i"),
+            deleted: false
         },
         {
             year:Number(year)
@@ -86,7 +89,8 @@ router.patch("/custom/engine/:make/:model", async (req, res) => {
 
         const vehicle = await Car.findOneAndUpdate({
                 make: make,
-                model: model
+                model: model,
+                deleted:false,
         },
         {
             engine:engine,
@@ -106,13 +110,13 @@ router.patch("/custom/engine/:make/:model", async (req, res) => {
         })
 });
 
-
 //filkter type
 router.get("/filter/type/:type", async (req, res) => {
     const { type } = req.params;
 
     const vehicle = await Car.find({
         type: new RegExp(`^${type}$`, "i"),
+        deleted:false,
     });
     
         if (vehicle.length === 0){
@@ -168,23 +172,59 @@ router.post("/", async (req, res) =>{
 router.delete("/:make/:model", async (req, res) =>{
     const {make, model} = req.params
     
-    const vehicle = await Car.findOneAndDelete({   
+    const vehicle = await Car.findOneAndUpdate({   
         make: new RegExp(`^${make}$`, "i"), 
         model: new RegExp(`^${model}$`, "i"),
-    })
+    },
+    {
+        deleted:true,
+        deletedAt: new Date(),
+    },
+    {
+        returnDocument:"after"
+    },
+);
 
     if(!vehicle){
        return res.status(404).json({message:"Cannot find Model"})
     }
     res.json({
-        message:"Vehicle deleted successfully!",
+        message:"Vehicle moved to thrash",
         deletedVehicle:vehicle
+    });
+});
+
+// restore 
+router.patch("/restore/:make/:model", async (req, res) => {
+    const { make, model } = req.params;
+
+    const vehicle = await Car.findOneAndUpdate(
+    {
+        make: new RegExp(`^${make}$`, "i"),
+        model: new RegExp(`^${model}$`, "i"),
+    },
+    {
+        deleted: false,
+        deletedAt: null,
+    },
+    {
+        returnDocument:"after",
+    }
+);
+
+    if (!vehicle){
+        res.status(404).json({message:"vehicle not found"})
+    }
+
+    res.json({
+        message:"Vehicle restored",
+        vehicle
     });
 });
 
 // get make
 router.get("/:make", async (req,res) =>{
- const car = await Car.find({ make: new RegExp(`^${req.params.make}$`, "i") });;
+ const car = await Car.find({ make: new RegExp(`^${req.params.make}$`, "i"), deleted: false });;
 
     if(car.length === 0){
         return res.status(404).json({message:"Make not found"})
@@ -199,7 +239,10 @@ router.get("/:make/:model", async (req,res) =>{
 
     const vehicle = await Car.findOne({
         make: new RegExp(`^${make}$`, "i"), 
-        model: new RegExp(`^${model}$`, "i")});
+        model: new RegExp(`^${model}$`, "i"),
+        deleted: false
+    });
+
 
       if(!vehicle){
         return res.status(404).json({message:"Make not found"})

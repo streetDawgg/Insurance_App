@@ -5,7 +5,7 @@ import connectDB from "./db/connect.js";
 import carRoutes from "./routes/cars.js";
 
 dotenv.config();
-console.log(process.env.MONGO_URI);
+//console.log(process.env.MONGO_URI);
 
 const app = express();
 app.use(express.json());

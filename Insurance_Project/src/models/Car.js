@@ -6,7 +6,7 @@ const modelSchema =  new mongoose.Schema({
     model: String,
     type: String,
     engine: String,
-    //cylinder:Number,
+    cylinder:Number,
     year: Number,
 
     deleted: {

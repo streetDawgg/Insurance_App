@@ -14,7 +14,7 @@ router.get("/", async (req, res) =>{
         const skip = (page -1) * limit;
 
         const cars = await Car.find({
-            delted:false
+            deleted:false
         })
         .skip(skip)
         .limit(limit);
@@ -224,7 +224,10 @@ router.patch("/restore/:make/:model", async (req, res) => {
 
 // get make
 router.get("/:make", async (req,res) =>{
- const car = await Car.find({ make: new RegExp(`^${req.params.make}$`, "i"), deleted: false });;
+ const car = await Car.find({ 
+    make: new RegExp(`^${req.params.make}$`, "i"), 
+    deleted: false 
+});
 
     if(car.length === 0){
         return res.status(404).json({message:"Make not found"})

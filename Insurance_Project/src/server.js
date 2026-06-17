@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectDB from "./db/connect.js";
 
 import carRoutes from "./routes/cars.js";
+import usersRoutes from  "./routes/users.js"
 
 dotenv.config();
 //console.log(process.env.MONGO_URI);
@@ -12,7 +13,8 @@ app.use(express.json());
 
 connectDB();
 
-app.use("/cars", carRoutes)
+app.use("/cars", carRoutes);
+app.use("/users", usersRoutes);
 
 app.get("/",(req, res) => {
     res.send("API is RUNNING")

@@ -14,11 +14,11 @@ export const calculateFamilyInsurance = ({
 
     familyDrivers.forEach(driver =>{
         console.log("Driver input:", driver);
-        const makeData = autoDB.find(car => car.make === driver.make);
 
+        const makeData = autoDB.find(car => car.make === driver.make);
         console.log("Make Data:", makeData)
+
         const vehicle = makeData?.models.find(model => model.model === driver.model);
-    
         console.log("Vehicle:", vehicle)
     
     const vehicleData = vehiclePremium(vehicle, basePrice);

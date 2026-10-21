@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema({
     username: String,
     email: String,
     password: String,
+    role: String,
 
     deleted: {
     type: Boolean,
@@ -16,5 +17,11 @@ const userSchema = new mongoose.Schema({
     }
 });
 
+/*const userAdmin = new mongoose.Schema({
+    ...userSchema,
+    role: String,
+});*/
+
 const User = mongoose.model("User", userSchema);
+//const Admin = mongoose.model("Admin",userAdmin);
 export default User;

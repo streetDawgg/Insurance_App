@@ -26,6 +26,10 @@ try{
         message:"Invalid token"
     });
 }
+console.log(req.user)
+console.log(req.user.role)
 };
+
+
 
 export default auth;

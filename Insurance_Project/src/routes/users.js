@@ -1,8 +1,9 @@
 import express from "express"
-import User from "../models/User.js"
+import User  from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import auth from "../middleware/auth.js";
+import authAdmin from "../middleware/auth.admin.js";
 
 
 const router = express.Router();
@@ -46,7 +47,7 @@ res.json(users);
 // register
 router.post("/register", async(req, res)=>{
     try{
-        const { username, email, password } = req.body;
+        const { username, email, role, password } = req.body;
         
         //validation
         if (!username.trim()){
@@ -57,6 +58,9 @@ router.post("/register", async(req, res)=>{
         }
         if (!password.trim()){
             return res.status(400).json({message:"Password is required!"});
+        }
+        if (!role.trim()){
+            return res.status(400).json({message:" "})
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -84,6 +88,7 @@ router.post("/register", async(req, res)=>{
             username,
             email,
             password: hashedPassword,
+            role,
         });
 
  
@@ -98,12 +103,13 @@ router.post("/register", async(req, res)=>{
 
 // login
 router.post("/login", async(req, res) =>{
-        const { username, email, password } = req.body; 
+        const { username, email, role, password } = req.body; 
 
         const user = await User.findOne({
             email: email,
+            role: role,
         });
-        
+
         if (!user){
             return res.status(404).json({
                 message:"User not found"
@@ -123,25 +129,28 @@ router.post("/login", async(req, res) =>{
 
         const token = jwt.sign({
             id: user._id,
-            username: user.username
+            username: user.username,
+            role: user.role
         },
         process.env.JWT_SECRET,
         {
             expiresIn:"1h"
         }
     );
-
-        res.json({
+       res.json({
             message:"Login successfully!",
             token,
             user:{
                 id:user._id,
                 username: user.username,
                 email: user.email,
+                role: user.role,
             }
         });
-});
+  
 
+});
+//get Key
 router.get("/profile", auth, async (req, res) =>{
     const user = await User.findById(req.user.id).select("-password");
 
@@ -186,7 +195,7 @@ router.patch("/reset-password/:email", async (req, res)=>{
 });
 
 // delete User
-router.delete(`/delete/:id`, async (req, res) => {
+router.delete(`/delete/:id`, auth, authAdmin, async (req, res) => {
     const { id } = req.params
 
     const users = await User.findByIdAndUpdate (

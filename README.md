@@ -3,7 +3,10 @@ Automobile Insurance Calculator Prototype
 JWT, Node.JS, Express.Js, MongoDb(Mongoose), ReactJs.
 
 Applied CRUD Method, REST APIs, Authetication(JWT), and Hashing.
+
 !!!  Minimal User Interface just a prototype !!!
+
+!!! Focused more on Backend !!!
 
 [    BENEZER BARTOLAZO    ]   
 #TESDA
